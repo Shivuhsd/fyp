@@ -1,0 +1,659 @@
+<!-- <!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Predict</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        form {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>Predict Adverse Event Outcomes</h1>
+    <form action="{{ url_for('predict') }}" method="post">
+        <label for="device_name">Device Name:</label>
+        <input type="text" id="device_name" name="device_name" required><br>
+        
+        <label for="location">Location:</label>
+        <input type="text" id="location_of_event" name="location_of_event" required><br>
+        
+        <label for="age">Age:</label>
+        <input type="number" id="age" name="age" min="0" required><br>
+        
+        <label for="gender">Gender:</label>
+        <select id="gender" name="gender" required>
+            <option value="" disabled selected>Select Gender</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
+        </select><br>
+        
+        <label for="past_history">Past History:</label>
+        <input type="text" id="past_history" name="past_history" required><br>
+        
+        <label for="nature_of_event">Nature of Event:</label>
+        <input type="text" id="nature_of_event" name="nature_of_event" required><br>
+        
+        <input type="submit" value="Predict">
+    </form>
+</body>
+</html> -->
+<!--<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Predict</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@100;400;600&display=swap");
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif;
+      }
+      body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        width: 100%;
+        padding: 0 10px;
+      }
+      .form-container {
+        display: flex;
+        flex-direction: column;
+        gap: 1em;
+        width: 100%;
+        max-width: 600px;
+      }
+      .form-container form {
+        display: flex;
+        flex-direction: column;
+        gap: 1em;
+      }
+      .form-container input, .form-container select {
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+      }
+      .form-container button {
+        padding: 10px;
+        background: #000;
+        color: #fff;
+        border-radius: 5px;
+        border: none;
+        cursor: pointer;
+      }
+      .form-container button:hover {
+        background: #444;
+      }
+      .results {
+        display: flex;
+        flex-direction: column;
+        gap: 1em;
+        margin-top: 2em;
+      }
+      .result {
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background: #f9f9f9;
+      }
+      .result strong {
+        display: block;
+        margin-bottom: 0.5em;
+      }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h1>Predict</h1>
+        <form method="post" action="{{ url_for('predict') }}">
+            <label for="device_name">Device Name:</label>
+            <input type="text" id="device_name" name="device_name" required />
+            
+            <label for="location_of_event">Location of Event:</label>
+            <input type="text" id="location_of_event" name="location_of_event" required />
+            
+            <label for="age">Age:</label>
+            <input type="number" id="age" name="age" required />
+            
+            <label for="gender">Gender:</label>
+            <select id="gender" name="gender" required>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+            </select>
+            
+            <label for="past_history">Past History:</label>
+            <input type="text" id="past_history" name="past_history" required />
+            
+            <label for="nature_of_event">Nature of Event:</label>
+            <input type="text" id="nature_of_event" name="nature_of_event" required />
+            
+            <button type="submit">Predict</button>
+        </form>
+        
+        {% if predictions %}
+        <div class="results">
+            <div class="result">
+                <strong>Device Risk Classification:</strong>
+                <p>{{ predictions.get('Device Risk Classification', 'N/A') }}</p>
+            </div>
+            
+            <div class="result">
+                <strong>Causality Assessment:</strong>
+                <p>{{ predictions.get('Causality Assessment', 'N/A') }}</p>
+            </div>
+            
+            <div class="result">
+                <strong>Serious Event:</strong>
+                <p>{{ predictions.get('Serious Event', 'N/A') }}</p>
+            </div>
+            
+            <div class="result">
+                <strong>Prolongation of the Event:</strong>
+                <p>{{ predictions.get('Prolongation of Event', 'N/A') }}</p>
+            </div>
+            
+            <div class="result">
+                <strong>Potential Diseases or Side Effects:</strong>
+                <p>{{ predictions.get('Potential Diseases or Side Effects', 'N/A') }}</p>
+            </div>
+            
+            <div class="result">
+                <strong>Prevention Techniques:</strong>
+                <p>{{ predictions.get('Prevention Techniques', 'N/A') }}</p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html> -->
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Predict Adverse Event Outcomes</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #F4F4F4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 80%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            background-color: #003D6B;
+            color: #fff;
+            padding: 20px 0;
+            text-align: center;
+            border-bottom: 3px solid #0056A0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: 700;
+        }
+        .form-container, .results-container {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .form-container h2, .results-container h2 {
+            margin-bottom: 20px;
+            color: #003D6B;
+            font-size: 1.8em;
+            border-bottom: 2px solid #0056A0;
+            padding-bottom: 10px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        input, select {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 1em;
+        }
+        button {
+            background-color: #0056A0;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 14px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #003D6B;
+        }
+        .result {
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+        .result:last-child {
+            border-bottom: none;
+        }
+        .result strong {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #333;
+        }
+        .result p {
+            margin: 0;
+            color: #555;
+        }
+        footer {
+            background-color: #003D6B;
+            color: #fff;
+            text-align: center;
+            padding: 15px;
+            font-size: 0.9em;
+            border-top: 3px solid #0056A0;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Predict Adverse Event Outcomes</h1>
+    </header>
+    
+    <div class="container">
+        <div class="form-container">
+            <h2>Input Data</h2>
+            <form method="post" action="{{ url_for('predict') }}">
+                <label for="device_name">Device Name:</label>
+                <select id="device_name" name="device_name" required>
+                    <option value="" disabled selected>Select a Device</option>
+                    <option value="ALPHA AIR BED">ALPHA AIR BED</option>
+                    <option value="BiPAP">BiPAP</option>
+                    <option value="BIPAP Face mask">BIPAP Face mask</option>
+                    <option value="Central Venous Catheter">Central Venous Catheter</option>
+                    <option value="CPAP">CPAP</option>
+                    <option value="DEFIBRILLATOR">DEFIBRILLATOR</option>
+                    <option value="ELECTROCARDIOGRAPH">ELECTROCARDIOGRAPH</option>
+                    <option value="ENDOTRACHEAL TUBE">ENDOTRACHEAL TUBE</option>
+                    <option value="INFUSION PUMP">INFUSION PUMP</option>
+                    <option value="IV Cannula">IV Cannula</option>
+                    <option value="Latex Foley Ballon Catheter">Latex Foley Ballon Catheter</option>
+                    <option value="MECHANICAL VENTILATOR">MECHANICAL VENTILATOR</option>
+                    <option value="NON INVASIVE VENTILATOR">NON INVASIVE VENTILATOR</option>
+                    <option value="OXYGEN CONCENTRATOR">OXYGEN CONCENTRATOR</option>
+                    <option value="OXYGEN MASK">OXYGEN MASK</option>
+                    <option value="RUSCH STERILE ENDOTRACHEAL TUBE">RUSCH STERILE ENDOTRACHEAL TUBE</option>
+                    <option value="SILICON CATHETER">SILICON CATHETER</option>
+                    <option value="SYRINGE PUMP">SYRINGE PUMP</option>
+                    <option value="T-PIECE">T-PIECE</option>
+                    <option value="UNDER WATER SEAL DRAINAGE SYSTEM">UNDER WATER SEAL DRAINAGE SYSTEM</option>
+                </select>
+                
+                <label for="location_of_event">Location of Event:</label>
+                <select id="location_of_event" name="location_of_event" required>
+                    <option value="" disabled selected>Select Location of Event</option>
+                    <option value="Cardiology ICU">Cardiology ICU</option>
+                    <option value="CCU">CCU</option>
+                    <option value="Emergency Ward">Emergency Ward</option>
+                    <option value="General ICU">General ICU</option>
+                    <option value="General medicine -1">General medicine -1</option>
+                    <option value="General medicine -2">General medicine -2</option>
+                    <option value="General medicine -4">General medicine -4</option>
+                    <option value="Hospital Premise">Hospital Premise</option>
+                    <option value="ICCU">ICCU</option>
+                    <option value="ICU">ICU</option>
+                    <option value="MICU">MICU</option>
+                    <option value="Neurology Unit-1">Neurology Unit-1</option>
+                    <option value="Paediatrics Unit-3">Paediatrics Unit-3</option>
+                    <option value="PICU">PICU</option>
+                    <option value="Pulmonology Unit-1">Pulmonology Unit-1</option>
+                    <option value="RICU">RICU</option>
+                    <option value="SICU">SICU</option>
+                    <option value="Surgery Unit-1">Surgery Unit-1</option>
+                    <option value="Urology unit -1">Urology unit -1</option>
+                </select>
+                
+                <label for="age">Age:</label>
+                <input type="number" id="age" name="age" required />
+                
+                <label for="gender">Gender:</label>
+                <select id="gender" name="gender" required>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                </select>
+                
+                <label for="past_history">Past History:</label>
+                <input type="text" id="past_history" name="past_history" placeholder="Enter 'No Previous History' if none" required />
+                
+                <label for="nature_of_event">Nature of Event:</label>
+                <input type="text" id="nature_of_event" name="nature_of_event" placeholder="e.g., VENTILATOR ASSOCIATED PNEUMONIA or ALPHA AIR BED ASSOCIATED GRADE 1 BED SORE" required oninput="this.value = this.value.toUpperCase()" />
+                
+                <button type="submit">Predict</button>
+            </form>
+        </div>
+
+        {% if predictions %}
+        <div class="results-container">
+            <h2>Prediction Results</h2>
+            <div class="result">
+                <strong>Device Risk Classification:</strong>
+                <p>{{ predictions.get('Device Risk Classification', 'N/A') }}</p>
+            </div>
+            
+            <div class="result">
+                <strong>Causality Assessment:</strong>
+                <p>{{ predictions.get('Causality Assessment', 'N/A') }}</p>
+            </div>
+            
+            <div class="result">
+                <strong>Serious Event:</strong>
+                <p>{{ predictions.get('Serious Event', 'N/A') }}</p>
+            </div>
+            
+            <div class="result">
+                <strong>Prolongation of the Event:</strong>
+                <p>{{ predictions.get('Prolongation of Event', 'N/A') }}</p>
+            </div>
+            
+            <div class="result">
+                <strong>Potential Diseases or Side Effects:</strong>
+                <p>{{ predictions.get('Potential Diseases or Side Effects', 'N/A') }}</p>
+            </div>
+            
+            <div class="result">
+                <strong>Prevention Techniques:</strong>
+                <p>{{ predictions.get('Prevention Techniques', 'N/A') }}</p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <footer>
+        &copy; 2024 Your Company. All rights reserved.
+    </footer>
+</body>
+</html> -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Predict Adverse Event Outcomes</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #F8F9FA;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 80%;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            background-color: #004080;
+            color: #fff;
+            padding: 10px 0;
+            text-align: center;
+            border-bottom: 3px solid #0066CC;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 1.8em;
+            font-weight: 600;
+        }
+        .form-container, .results-container {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+        .form-container h2, .results-container h2 {
+            margin-bottom: 20px;
+            color: #004080;
+            font-size: 1.5em;
+            font-weight: 600;
+            border-bottom: 1px solid #0066CC;
+            padding-bottom: 10px;
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 500;
+            color: #555;
+        }
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 1em;
+            box-sizing: border-box;
+            color: #333;
+            background-color: #F0F3F4;
+        }
+        input:focus, select:focus {
+            border-color: #0066CC;
+            outline: none;
+            background-color: #E8F0FE;
+        }
+        button {
+            background-color: #0066CC;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 12px;
+            font-size: 1em;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #004080;
+        }
+        .result {
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            background-color: #FAFAFA;
+        }
+        .result:last-child {
+            border-bottom: none;
+        }
+        .result strong {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #333;
+        }
+        .result p {
+            margin: 0;
+            color: #555;
+        }
+        footer {
+            background-color: #004080;
+            color: #fff;
+            text-align: center;
+            padding: 15px;
+            font-size: 0.9em;
+            border-top: 3px solid #0066CC;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Predict Medical Device Adverse Event Outcomes</h1>
+    </header>
+    
+    <div class="container">
+        <div class="form-container">
+            <h2>Input Data</h2>
+            <form method="post" action="{{ url_for('predict') }}#results">
+                <label for="device_name">Device Name:</label>
+                <select id="device_name" name="device_name" required>
+                    <option value="" disabled selected>Select a Device</option>
+                    <option value="ALPHA AIR BED">ALPHA AIR BED</option>
+                    <option value="BiPAP">BiPAP</option>
+                    <option value="BIPAP Face mask">BIPAP Face mask</option>
+                    <option value="Central Venous Catheter">Central Venous Catheter</option>
+                    <option value="CPAP">CPAP</option>
+                    <option value="DEFIBRILLATOR">DEFIBRILLATOR</option>
+                    <option value="ELECTROCARDIOGRAPH">ELECTROCARDIOGRAPH</option>
+                    <option value="ENDOTRACHEAL TUBE">ENDOTRACHEAL TUBE</option>
+                    <option value="INFUSION PUMP">INFUSION PUMP</option>
+                    <option value="IV Cannula">IV Cannula</option>
+                    <option value="Latex Foley Ballon Catheter">Latex Foley Ballon Catheter</option>
+                    <option value="MECHANICAL VENTILATOR">MECHANICAL VENTILATOR</option>
+                    <option value="NON INVASIVE VENTILATOR">NON INVASIVE VENTILATOR</option>
+                    <option value="OXYGEN CONCENTRATOR">OXYGEN CONCENTRATOR</option>
+                    <option value="OXYGEN MASK">OXYGEN MASK</option>
+                    <option value="RUSCH STERILE ENDOTRACHEAL TUBE">RUSCH STERILE ENDOTRACHEAL TUBE</option>
+                    <option value="SILICON CATHETER">SILICON CATHETER</option>
+                    <option value="SYRINGE PUMP">SYRINGE PUMP</option>
+                    <option value="T-PIECE">T-PIECE</option>
+                    <option value="UNDER WATER SEAL DRAINAGE SYSTEM">UNDER WATER SEAL DRAINAGE SYSTEM</option>
+                </select>
+                
+                <label for="location_of_event">Location of Event:</label>
+                <select id="location_of_event" name="location_of_event" required>
+                    <option value="" disabled selected>Select Location of Event</option>
+                    <option value="Cardiology ICU">Cardiology ICU</option>
+                    <option value="CCU">CCU</option>
+                    <option value="Emergency Ward">Emergency Ward</option>
+                    <option value="General ICU">General ICU</option>
+                    <option value="General medicine -1">General medicine -1</option>
+                    <option value="General medicine -2">General medicine -2</option>
+                    <option value="General medicine -4">General medicine -4</option>
+                    <option value="Hospital Premise">Hospital Premise</option>
+                    <option value="ICCU">ICCU</option>
+                    <option value="ICU">ICU</option>
+                    <option value="MICU">MICU</option>
+                    <option value="Neurology Unit-1">Neurology Unit-1</option>
+                    <option value="Paediatrics Unit-3">Paediatrics Unit-3</option>
+                    <option value="PICU">PICU</option>
+                    <option value="Pulmonology Unit-1">Pulmonology Unit-1</option>
+                    <option value="RICU">RICU</option>
+                    <option value="SICU">SICU</option>
+                    <option value="Surgery Unit-1">Surgery Unit-1</option>
+                    <option value="Urology unit -1">Urology unit -1</option>
+                </select>
+                
+                <label for="age">Age:</label>
+                <input type="number" id="age" name="age" required />
+                
+                <label for="gender">Gender:</label>
+                <select id="gender" name="gender" required>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                </select>
+                
+                <label for="past_history">Past History:</label>
+                <input type="text" id="past_history" name="past_history" placeholder="Enter 'No Previous History' if none" required />
+                
+                <label for="nature_of_event">Nature of Event:</label>
+                <input type="text" id="nature_of_event" name="nature_of_event" placeholder="e.g., VENTILATOR ASSOCIATED PNEUMONIA or ALPHA AIR BED ASSOCIATED GRADE 1 BED SORE" required oninput="this.value = this.value.toUpperCase()" />
+                
+                <button type="submit">Predict</button>
+            </form>
+        </div>
+
+        {% if predictions %}
+        <div id="results" class="results-container">
+            <h2>Prediction Results</h2>
+            <div class="result">
+                <strong>Device Risk Classification:</strong>
+                <p>{{ predictions.get('Device Risk Classification', 'N/A') }}</p>
+            </div>
+            
+            <div class="result">
+                <strong>Causality Assessment:</strong>
+                <p>{{ predictions.get('Causality Assessment', 'N/A') }}</p>
+            </div>
+            
+            <div class="result">
+                <strong>Serious Event:</strong>
+                <p>{{ predictions.get('Serious Event', 'N/A') }}</p>
+            </div>
+            
+            <div class="result">
+                <strong>Prolongation of Event:</strong>
+                <p>{{ predictions.get('Prolongation of Event', 'N/A') }}</p>
+            </div>
+            
+            <div class="result">
+                <strong>Potential Diseases or Side Effects:</strong>
+                <p>{{ predictions.get('Potential Diseases or Side Effects', 'N/A') }}</p>
+            </div>
+            
+            <div class="result">
+                <strong>Prevention Techniques:</strong>
+                <p>{{ predictions.get('Prevention Techniques', 'N/A') }}</p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <footer>
+        <p>© 2024 Medical Predictive Analysis Tool. All rights reserved.</p>
+    </footer>
+</body>
+</html>

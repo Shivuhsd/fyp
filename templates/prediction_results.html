@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Prediction Results</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@100;400;600&display=swap");
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif;
+      }
+      body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        width: 100%;
+        padding: 0 10px;
+      }
+      .results {
+        display: flex;
+        flex-direction: column;
+        gap: 1em;
+        width: 100%;
+        max-width: 600px;
+      }
+      .result {
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background: #f9f9f9;
+      }
+      h1 {
+        text-align: center;
+        margin-bottom: 1em;
+      }
+      a.btn {
+        display: inline-block;
+        padding: 10px;
+        background: #000;
+        color: #fff;
+        border-radius: 5px;
+        text-align: center;
+        text-decoration: none;
+      }
+      a.btn:hover {
+        background: #444;
+      }
+    </style>
+</head>
+<body>
+    <div class="results">
+        <h1>Prediction Results</h1>
+        
+        <div class="result">
+            <strong>Device Risk Classification:</strong>
+            <p>{{ device_risk_classification if device_risk_classification != 'N/A' else 'Prediction not available due to feature mismatch.' }}</p>
+        </div>
+        
+        <div class="result">
+            <strong>Causality Assessment:</strong>
+            <p>{{ causality_assessment if causality_assessment != 'N/A' else 'Prediction not available due to feature mismatch.' }}</p>
+        </div>
+        
+        <div class="result">
+            <strong>Serious Event:</strong>
+            <p>{{ serious_event if serious_event != 'N/A' else 'Prediction not available due to feature mismatch.' }}</p>
+        </div>
+        
+        <div class="result">
+            <strong>Prolongation of the Event:</strong>
+            <p>{{ prolongation_of_event if prolongation_of_event != 'N/A' else 'Prediction not available due to feature mismatch.' }}</p>
+        </div>
+        
+        <div class="result">
+            <strong>Potential Diseases or Side Effects:</strong>
+            <p>{{ potential_diseases_or_side_effects if potential_diseases_or_side_effects != 'N/A' else 'Prediction not available due to feature mismatch.' }}</p>
+        </div>
+        
+        <div class="result">
+            <strong>Prevention Techniques:</strong>
+            <p>{{ prevention_techniques if prevention_techniques != 'N/A' else 'Prediction not available due to feature mismatch.' }}</p>
+        </div>
+        
+        <a href="{{ url_for('index') }}" class="btn">Back to Home</a>
+    </div>
+</body>
+</html>
