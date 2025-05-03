@@ -1,0 +1,443 @@
+<!-- <!DOCTYPE html>
+<html>
+<head>
+    <title>Results</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 1400px; /* Increased width of the container */
+            margin: 20px auto;
+            padding: 20px;
+        }
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); /* Fixed two-column layout */
+            gap: 30px; /* Increased gap between grid items */
+        }
+        .grid-item {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 30px; /* Increased padding for grid items */
+            transition: transform 0.3s ease;
+            overflow: hidden;
+        }
+        .grid-item:hover {
+            transform: translateY(-5px);
+        }
+        .grid-item img {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            transition: transform 0.3s ease;
+        }
+        .grid-item:hover img {
+            transform: scale(1.2);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 40px; /* Increased margin for better spacing */
+            font-size: 2.5em;
+            color: #007bff;
+        }
+        h2 {
+            font-size: 1.5em; /* Increased font size for subheadings */
+            margin-bottom: 20px; /* Increased margin below subheadings */
+        }
+        .btn {
+            display: block;
+            width: 100%;
+            max-width: 200px;
+            margin: 40px auto;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: white;
+            background-color: #007bff;
+            text-align: center;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        @media (max-width: 768px) {
+            .grid-container {
+                grid-template-columns: 1fr; /* Single column for smaller screens */
+            }
+            .container {
+                padding: 10px;
+            }
+            .grid-item {
+                padding: 15px;
+            }
+            h1 {
+                font-size: 24px;
+            }
+            h2 {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Demographics</h1>
+        <div class="grid-container">
+            <div class="grid-item">
+                <h2>Age Range Distribution</h2>
+                <img src="{{ url_for('static', filename='plots/age_range_distribution_pie.png') }}" alt="Age Range Distribution"/>
+            </div>
+            <div class="grid-item">
+                <h2>Gender Distribution</h2>
+                <img src="{{ url_for('static', filename='plots/gender_distribution_pie.png') }}" alt="Gender Distribution"/>
+            </div>
+            <div class="grid-item">
+                <h2>Most Devices that Caused MDAEs</h2>
+                <img src="{{ url_for('static', filename='plots/device_distribution.png') }}" alt="Device Distribution"/>
+            </div>
+            <!-- <div class="grid-item">
+                <h2>Corresponding Manufacturers</h2>
+                <img src="{{ url_for('static', filename='plots/manufacturer_distribution.png') }}" alt="Manufacturer Distribution"/>
+            </div> 
+            <div class="grid-item">
+                <h2>Device Risk Classification Distribution</h2>
+                <img src="{{ url_for('static', filename='plots/risk_classification_distribution.png') }}" alt="Risk Classification Distribution"/>
+            </div>
+            <div class="grid-item">
+                <h2>Causality Assessment Distribution</h2>
+                <img src="{{ url_for('static', filename='plots/causality_assessment_distribution.png') }}" alt="Causality Assessment Distribution"/>
+            </div>
+            <div class="grid-item">
+                <h2>Location of Event Distribution</h2>
+                <img src="{{ url_for('static', filename='plots/location_distribution.png') }}" alt="Location Distribution"/>
+            </div>
+            <div class="grid-item">
+                <h2>Serious Event</h2>
+                <img src="{{ url_for('static', filename='plots/serious_event_distribution.png') }}" alt="Location Distribution"/>
+            </div>
+            <div class="grid-item">
+                <h2>Patient Outcomes</h2>
+                <img src="{{ url_for('static', filename='plots/patient_outcomes_distribution.png') }}" alt="Location Distribution"/>
+            </div>
+            <div class="grid-item">
+                <h2>Top Devices with Most MDAEs by Manufacturer</h2>
+                <img src="{{ url_for('static', filename='plots/top_devices_per_manufacturer.png') }}" alt="Top Devices by Manufacturer"/>
+            </div>
+        </div>
+        <a href="{{ url_for('upload_file') }}" class="btn">Upload Another File</a>
+    </div>
+</body>
+</html> -->
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Demographics Results</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 2.4em;
+            color: #004080;
+            font-weight: 700;
+        }
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); /* Increased min-width for larger images */
+            gap: 20px;
+        }
+        .grid-item {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            text-align: center;
+        }
+        .grid-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-bottom: 2px solid #004080;
+        }
+        .grid-item h2 {
+            font-size: 1.4em;
+            margin: 20px;
+            color: #004080;
+            font-weight: 600;
+        }
+        .btn {
+            display: block;
+            width: 100%;
+            max-width: 220px;
+            margin: 40px auto;
+            padding: 12px 20px;
+            font-size: 1.1em;
+            color: #fff;
+            background-color: #004080;
+            text-align: center;
+            border: none;
+            border-radius: 6px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+        .btn:hover {
+            background-color: #002F6C;
+            transform: translateY(-2px);
+        }
+        @media (max-width: 768px) {
+            .grid-container {
+                grid-template-columns: 1fr;
+            }
+            h1 {
+                font-size: 1.8em;
+            }
+            .btn {
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Demographics Results</h1>
+        <div class="grid-container">
+            <div class="grid-item">
+                <h2>Age Range Distribution</h2>
+                <img src="{{ url_for('static', filename='plots/age_range_distribution_pie.png') }}" alt="Age Range Distribution"/>
+            </div>
+            <div class="grid-item">
+                <h2>Gender Distribution</h2>
+                <img src="{{ url_for('static', filename='plots/gender_distribution_pie.png') }}" alt="Gender Distribution"/>
+            </div>
+            <div class="grid-item">
+                <h2>Most Devices that Caused MDAEs</h2>
+                <img src="{{ url_for('static', filename='plots/device_distribution.png') }}" alt="Device Distribution"/>
+            </div>
+            <div class="grid-item">
+                <h2>Device Risk Classification Distribution</h2>
+                <img src="{{ url_for('static', filename='plots/risk_classification_distribution.png') }}" alt="Risk Classification Distribution"/>
+            </div>
+            <div class="grid-item">
+                <h2>Causality Assessment Distribution</h2>
+                <img src="{{ url_for('static', filename='plots/causality_assessment_distribution.png') }}" alt="Causality Assessment Distribution"/>
+            </div>
+            <div class="grid-item">
+                <h2>Location of Event Distribution</h2>
+                <img src="{{ url_for('static', filename='plots/location_distribution.png') }}" alt="Location Distribution"/>
+            </div>
+            <div class="grid-item">
+                <h2>Serious Event</h2>
+                <img src="{{ url_for('static', filename='plots/serious_event_distribution.png') }}" alt="Serious Event Distribution"/>
+            </div>
+            <div class="grid-item">
+                <h2>Patient Outcomes</h2>
+                <img src="{{ url_for('static', filename='plots/patient_outcomes_distribution.png') }}" alt="Patient Outcomes Distribution"/>
+            </div>
+            <div class="grid-item">
+                <h2>Top Devices with Most MDAEs by Manufacturer</h2>
+                <img src="{{ url_for('static', filename='plots/top_devices_per_manufacturer.png') }}" alt="Top Devices by Manufacturer"/>
+            </div>
+        </div>
+        <a href="{{ url_for('upload_file') }}" class="btn">Upload Another File</a>
+    </div>
+</body>
+</html> -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Demographics Results</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 2.4em;
+            color: #004080;
+            font-weight: 700;
+        }
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 20px;
+        }
+        .grid-item {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            text-align: center;
+        }
+        .grid-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-bottom: 2px solid #004080;
+        }
+        .grid-item h2 {
+            font-size: 1.4em;
+            margin: 20px;
+            color: #004080;
+            font-weight: 600;
+        }
+        .btn {
+            display: block;
+            width: 100%;
+            max-width: 220px;
+            margin: 20px auto;
+            padding: 12px 20px;
+            font-size: 1.1em;
+            color: #fff;
+            background-color: #004080;
+            text-align: center;
+            border: none;
+            border-radius: 6px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+        .btn:hover {
+            background-color: #002F6C;
+            transform: translateY(-2px);
+        }
+        @media (max-width: 768px) {
+            .grid-container {
+                grid-template-columns: 1fr;
+            }
+            h1 {
+                font-size: 1.8em;
+            }
+            .btn {
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Demographics Results</h1>
+        <div class="grid-container" id="grid-container">
+            <div class="grid-item">
+                <h2>Age Range Distribution</h2>
+                <img src="{{ url_for('static', filename='plots/age_range_distribution_pie.png') }}" alt="Age Range Distribution"/>
+            </div>
+            <div class="grid-item">
+                <h2>Gender Distribution</h2>
+                <img src="{{ url_for('static', filename='plots/gender_distribution_pie.png') }}" alt="Gender Distribution"/>
+            </div>
+            <div class="grid-item">
+                <h2>Most Devices that Caused MDAEs</h2>
+                <img src="{{ url_for('static', filename='plots/device_distribution.png') }}" alt="Device Distribution"/>
+            </div>
+            <div class="grid-item">
+                <h2>Device Risk Classification Distribution</h2>
+                <img src="{{ url_for('static', filename='plots/risk_classification_distribution.png') }}" alt="Risk Classification Distribution"/>
+            </div>
+            <div class="grid-item">
+                <h2>Causality Assessment Distribution</h2>
+                <img src="{{ url_for('static', filename='plots/causality_assessment_distribution.png') }}" alt="Causality Assessment Distribution"/>
+            </div>
+            <div class="grid-item">
+                <h2>Location of Event Distribution</h2>
+                <img src="{{ url_for('static', filename='plots/location_distribution.png') }}" alt="Location Distribution"/>
+            </div>
+            <div class="grid-item">
+                <h2>Serious Event</h2>
+                <img src="{{ url_for('static', filename='plots/serious_event_distribution.png') }}" alt="Serious Event Distribution"/>
+            </div>
+            <div class="grid-item">
+                <h2>Patient Outcomes</h2>
+                <img src="{{ url_for('static', filename='plots/patient_outcomes_distribution.png') }}" alt="Patient Outcomes Distribution"/>
+            </div>
+            <div class="grid-item">
+                <h2>Top Devices with Most MDAEs by Manufacturer</h2>
+                <img src="{{ url_for('static', filename='plots/top_devices_per_manufacturer.png') }}" alt="Top Devices by Manufacturer"/>
+            </div>
+        </div>
+        <a href="{{ url_for('upload_file') }}" class="btn">Upload Another File</a>
+        <button onclick="downloadPDF()" class="btn">Download PDF</button>
+    </div>
+
+    <script>
+        async function downloadPDF() {
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            const images = document.querySelectorAll('.grid-item img');
+            const titles = document.querySelectorAll('.grid-item h2');
+            
+            let yOffset = 10; // Y-offset for top margin
+            let index = 0;
+
+            for (let i = 0; i < images.length; i++) {
+                const canvas = await html2canvas(images[i], { scale: 3 }); // High quality
+                const imgData = canvas.toDataURL('image/png');
+
+                // Add title
+                pdf.setFontSize(14);
+                pdf.setTextColor(0, 64, 128);
+                pdf.text(titles[i].innerText, 10, yOffset + 10);
+
+                // Add image
+                pdf.addImage(imgData, 'PNG', 10, yOffset + 15, 190, 90);
+
+                // If 2 images are already added, add new page
+                if (index === 1 && i !== images.length - 1) {
+                    pdf.addPage();
+                    yOffset = 10;
+                    index = 0;
+                } else {
+                    yOffset += 110; // move lower for second image
+                    index++;
+                }
+            }
+
+            pdf.save('Demographics_Results.pdf');
+        }
+    </script>
+</body>
+</html>
+
