@@ -1,2 +1,0 @@
-username: Placementwifi1
-pass: placement@123
