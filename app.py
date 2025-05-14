@@ -13,35 +13,33 @@ logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
-app.secret_key = 'supersecretkey'  # Necessary for flashing messages
+app.secret_key = 'supersecretkey'
 
-# Ensure the static/plots directory exists
+# Ensure plots folder exists
 if not os.path.exists('static/plots'):
     os.makedirs('static/plots')
 
-# Load the pre-trained scaler, feature names, and models
-scaler_filename = 'models/scaler.pkl'
-feature_names_filename = 'models/feature_names.pkl'
-scaler = joblib.load(scaler_filename)
-feature_names = joblib.load(feature_names_filename)
+# Load models and scaler
+scaler = joblib.load('D:/FYP/saved_models/scaler.pkl')
+feature_names = joblib.load('D:/FYP/saved_models/feature_names.pkl')
 
 model_paths = {
-    'Device Risk Classification': 'models/best_model_device_risk_classification.pkl',
-    'Causality Assessment': 'models/best_model_causality_assessment.pkl',
-    'Serious Event': 'models/best_model_serious_event.pkl',
-    'Prolongation of Event': 'models/best_model_prolongation_of_event.pkl',
-    'Potential Diseases or Side Effects': 'models/best_model_potential_diseases_or_side_effects.pkl',
-    'Prevention Techniques': 'models/best_model_prevention_techniques.pkl'
+    'Device Risk Classification': 'D:/FYP/saved_models/best_model_device_risk_classification.pkl',
+    'Causality Assessment': 'D:/FYP/saved_models/best_model_causality_assessment.pkl',
+    'Serious Event': 'D:/FYP/saved_models/best_model_serious_event.pkl',
+    'Prolongation of Event': 'D:/FYP/saved_models/best_model_prolongation_of_event.pkl',
+    'Potential Diseases or Side Effects': 'D:/FYP/saved_models/best_model_potential_diseases_or_side_effects.pkl',
+    'Prevention Techniques': 'D:/FYP/saved_models/best_model_prevention_techniques.pkl'
 }
 
 models = {}
 for target_name, path in model_paths.items():
     try:
         models[target_name] = joblib.load(path)
-        logger.debug(f"Loaded model for {target_name} from {path}")
+        logger.debug(f"Loaded model for {target_name}")
     except Exception as e:
-        logger.error(f"Error loading model for {target_name}: {str(e)}")
-        flash(f"Error loading model for {target_name}.", 'danger')
+        logger.error(f"Error loading {target_name}: {str(e)}")
+        flash(f"Model load error for {target_name}", 'danger')
 
 @app.route('/')
 def index():
@@ -58,156 +56,128 @@ def upload_file():
                 flash('File uploaded and processed successfully!', 'success')
                 return redirect(url_for('display_results'))
             except Exception as e:
-                logger.error(f"Error processing file: {str(e)}")
-                flash(f"Error processing file: {str(e)}", 'danger')
-                return redirect(url_for('upload_file'))
+                logger.error(f"Processing error: {str(e)}")
+                flash(f"Processing error: {str(e)}", 'danger')
         else:
-            flash('No file uploaded!', 'danger')
+            flash('No file uploaded.', 'danger')
     return render_template('upload.html')
 
 def generate_plots(data):
-    # Clear existing plots
-    for filename in os.listdir('static/plots'):
-        file_path = os.path.join('static/plots', filename)
-        if os.path.isfile(file_path):
-            os.unlink(file_path)
+    # Strip column names
+    data.rename(columns=lambda x: x.strip(), inplace=True)
 
-    # Age Range Distribution
+    # Clear existing plots
+    for f in os.listdir('static/plots'):
+        path = os.path.join('static/plots', f)
+        if os.path.isfile(path):
+            os.remove(path)
+
+    # Age Range
     age_bins = [0, 18, 30, 45, 60, 75, 90, 105]
     age_labels = ['0-18', '19-30', '31-45', '46-60', '61-75', '76-90', '91+']
     data['Age Range'] = pd.cut(data['Age of the patient'], bins=age_bins, labels=age_labels)
-    age_distribution = data['Age Range'].value_counts().sort_index()
-
+    age_dist = data['Age Range'].value_counts().sort_index()
     plt.figure(figsize=(10, 10))
-    labels = [f'{label} ({count})' for label, count in zip(age_distribution.index, age_distribution)]
-    plt.pie(age_distribution, labels=labels, autopct='%1.1f%%', colors=sns.color_palette('viridis', n_colors=len(age_distribution)), startangle=140)
-    plt.title('Age Range Distribution of Patients', fontsize=16, weight='bold')
+    plt.pie(age_dist, labels=[f'{i} ({c})' for i, c in zip(age_dist.index, age_dist)], autopct='%1.1f%%',
+            colors=sns.color_palette('viridis', len(age_dist)), startangle=140)
+    plt.title('Age Range Distribution', fontsize=16, weight='bold')
     plt.tight_layout()
     plt.savefig('static/plots/age_range_distribution_pie.png')
     plt.close()
 
-    # Gender Distribution
-    gender_distribution = data['Gender'].value_counts()
+    # Gender
+    gender_dist = data['Gender'].value_counts()
     plt.figure(figsize=(8, 8))
-    plt.pie(gender_distribution, labels=gender_distribution.index, autopct='%1.1f%%', colors=sns.color_palette('viridis', n_colors=len(gender_distribution)))
+    plt.pie(gender_dist, labels=gender_dist.index, autopct='%1.1f%%',
+            colors=sns.color_palette('viridis', len(gender_dist)))
     plt.title('Gender Distribution')
     plt.tight_layout()
     plt.savefig('static/plots/gender_distribution_pie.png')
     plt.close()
 
-    # Most Devices that Caused MDAEs
-    device_distribution = data['Name of the device'].value_counts().head(10)
+    # Device MDAE
+    device_dist = data['Name of the device'].value_counts().head(10)
     plt.figure(figsize=(12, 8))
-    sns.barplot(x=device_distribution.values, y=device_distribution.index, color=sns.color_palette('viridis', n_colors=len(device_distribution))[0])
-    plt.title('Most Devices that Caused MDAEs')
+    sns.barplot(x=device_dist.values, y=device_dist.index, color=sns.color_palette('viridis')[0])
+    plt.title('Top Devices Causing MDAEs')
     plt.xlabel('Count')
-    plt.ylabel('Device Name')
     plt.tight_layout()
     plt.savefig('static/plots/device_distribution.png')
     plt.close()
 
-    # Device Risk Classification
-    risk_classification_distribution = data['Device risk classification as per India MDR 2017'].value_counts()
+    # Risk Classification
+    risk_dist = data['Device risk classification as per India MDR 2017'].value_counts()
     plt.figure(figsize=(10, 6))
-    sns.barplot(x=risk_classification_distribution.index, y=risk_classification_distribution.values, color=sns.color_palette('viridis', n_colors=len(risk_classification_distribution))[0])
-    plt.title('Device Risk Classification Distribution')
-    plt.xlabel('Risk Classification')
-    plt.ylabel('Count')
+    sns.barplot(x=risk_dist.index, y=risk_dist.values, color=sns.color_palette('viridis')[0])
+    plt.title('Device Risk Classification')
     plt.xticks(rotation=45)
     plt.tight_layout()
     plt.savefig('static/plots/risk_classification_distribution.png')
     plt.close()
 
-    # Causality Assessment Distribution
+    # Causality
     if 'Causality assessment' in data.columns:
-        causality_distribution = data['Causality assessment'].value_counts()
+        causality_dist = data['Causality assessment'].value_counts()
         plt.figure(figsize=(10, 6))
-        sns.barplot(x=causality_distribution.index, y=causality_distribution.values, color=sns.color_palette('viridis', n_colors=len(causality_distribution))[0])
-        plt.title('Causality Assessment Distribution')
-        plt.xlabel('Causality Assessment')
-        plt.ylabel('Count')
+        sns.barplot(x=causality_dist.index, y=causality_dist.values, color=sns.color_palette('viridis')[0])
+        plt.title('Causality Assessment')
         plt.xticks(rotation=45)
         plt.tight_layout()
         plt.savefig('static/plots/causality_assessment_distribution.png')
         plt.close()
     else:
-        flash("Column 'Causality assessment' not found in the dataset.", 'warning')
+        flash("Missing column: 'Causality assessment'", 'warning')
 
-    # Location of Event Distribution
-    location_distribution = data['Location of event'].value_counts()
+    # Location
+    loc_dist = data['Location of event'].value_counts()
     plt.figure(figsize=(12, 8))
-    sns.barplot(x=location_distribution.values, y=location_distribution.index, color=sns.color_palette('viridis', n_colors=len(location_distribution))[0])
-    plt.title('Location of Event Distribution')
-    plt.xlabel('Count')
-    plt.ylabel('Location')
+    sns.barplot(x=loc_dist.values, y=loc_dist.index, color=sns.color_palette('viridis')[0])
+    plt.title('Location of Event')
     plt.tight_layout()
     plt.savefig('static/plots/location_distribution.png')
     plt.close()
 
-    # Serious Event Distribution
-    if 'Serious Event' in data.columns:
-        serious_event_distribution = data['Serious Event'].value_counts()
+    # Severity (Fixed)
+    if 'severity' in data.columns:
+        data['severity'] = data['severity'].astype(str).str.strip().str.replace(")", "", regex=False)
+        sev_dist = data['severity'].value_counts()
         plt.figure(figsize=(8, 8))
-        plt.pie(serious_event_distribution, labels=serious_event_distribution.index, autopct='%1.1f%%', colors=sns.color_palette('viridis', n_colors=len(serious_event_distribution)))
-        plt.title('Serious Event Distribution')
+        plt.pie(sev_dist, labels=sev_dist.index, autopct='%1.1f%%',
+                colors=sns.color_palette('viridis', len(sev_dist)))
+        plt.title('Severity Distribution')
         plt.tight_layout()
-        plt.savefig('static/plots/serious_event_distribution.png')
+        plt.savefig('static/plots/severity_distribution.png')
         plt.close()
     else:
-        flash("Column 'Serious Event' not found in the dataset.", 'warning')
+        flash("Missing column: 'severity'", 'warning')
 
-   # Patient Outcomes Distribution
+    # Patient Outcomes
     if 'Patient Outcomes' in data.columns:
-        patient_outcomes_distribution = data['Patient Outcomes'].value_counts()
+        outcome_dist = data['Patient Outcomes'].value_counts()
         plt.figure(figsize=(10, 10))
-        plt.pie(patient_outcomes_distribution, labels=patient_outcomes_distribution.index, autopct='%1.1f%%', colors=sns.color_palette('viridis', n_colors=len(patient_outcomes_distribution)))
+        plt.pie(outcome_dist, labels=outcome_dist.index, autopct='%1.1f%%',
+                colors=sns.color_palette('viridis', len(outcome_dist)))
         plt.title('Patient Outcomes Distribution')
         plt.tight_layout()
         plt.savefig('static/plots/patient_outcomes_distribution.png')
         plt.close()
     else:
-        flash("Column 'Patient Outcomes' not found in the dataset.", 'warning')
+        flash("Missing column: 'Patient Outcomes'", 'warning')
 
-    # Analysis: Device with Most MDAEs by Manufacturer
-    # if 'Manufacturer name' in data.columns:
-    #     device_manufacturer_distribution = data.groupby(['Manufacturer name', 'Name of the device']).size().reset_index(name='MDAE Count')
-    #     top_devices_per_manufacturer = device_manufacturer_distribution.loc[device_manufacturer_distribution.groupby('Manufacturer name')['MDAE Count'].idxmax()]
-    #     top_devices_per_manufacturer['Label'] = top_devices_per_manufacturer['Name of the device'] + ' (' + top_devices_per_manufacturer['Manufacturer name'] + ')'
-    #     plt.figure(figsize=(12, 8))
-    #     sns.barplot(x='MDAE Count', y='Label', data=top_devices_per_manufacturer, color=sns.color_palette('viridis', n_colors=len(top_devices_per_manufacturer))[0])
-    #     plt.title('Top Devices with Most MDAEs by Manufacturer')
-    #     plt.xlabel('MDAE Count')
-    #     plt.ylabel('Device Name (Manufacturer)')
-    #     plt.tight_layout()
-    #     plt.savefig('static/plots/top_devices_per_manufacturer.png')
-    #     plt.close()
-    # else:
-    #     flash("Column 'Manufacturer name' not found in the dataset.", 'warning')
-    # Analysis: Device with Most MDAEs by Manufacturer
+    # Device vs Manufacturer
     if 'Manufacturer name' in data.columns:
-        device_manufacturer_distribution = data.groupby(['Manufacturer name', 'Name of the device']).size().reset_index(name='MDAE Count')
-        
-        # Pivot the data to get manufacturers as rows and devices as columns
-        pivot_df = device_manufacturer_distribution.pivot(index='Manufacturer name', columns='Name of the device', values='MDAE Count').fillna(0)
-        
-        # Sort manufacturers by total MDAEs
-        pivot_df['Total MDAEs'] = pivot_df.sum(axis=1)
-        pivot_df = pivot_df.sort_values(by='Total MDAEs', ascending=False).drop(columns='Total MDAEs')
-
-        # Plot a horizontal stacked bar chart
+        grp = data.groupby(['Manufacturer name', 'Name of the device']).size().reset_index(name='MDAE Count')
+        pivot_df = grp.pivot(index='Manufacturer name', columns='Name of the device', values='MDAE Count').fillna(0)
+        pivot_df['Total'] = pivot_df.sum(axis=1)
+        pivot_df = pivot_df.sort_values('Total', ascending=False).drop('Total', axis=1)
         pivot_df.plot(kind='barh', stacked=True, figsize=(12, 8), colormap='viridis')
-        
         plt.title('Top Devices with Most MDAEs by Manufacturer', fontsize=16, weight='bold')
         plt.xlabel('MDAE Count')
-        plt.ylabel('Manufacturer')
-        plt.legend(title='Device Name', bbox_to_anchor=(1.05, 1), loc='upper left')
         plt.tight_layout()
         plt.savefig('static/plots/top_devices_per_manufacturer.png')
         plt.close()
     else:
-        flash("Column 'Manufacturer name' not found in the dataset.", 'warning')
-
-
+        flash("Missing column: 'Manufacturer name'", 'warning')
 
 @app.route('/results')
 def display_results():
@@ -218,58 +188,46 @@ def predict():
     predictions = {}
     if request.method == 'POST':
         try:
-            # Retrieve form data
             device_name = request.form.get('device_name')
-            location_of_event = request.form.get('location_of_event')
+            location = request.form.get('location_of_event')
             age = request.form.get('age')
             gender = request.form.get('gender')
-            past_history = request.form.get('past_history')
-            nature_of_event = request.form.get('nature_of_event')
+            history = request.form.get('past_history')
+            event_type = request.form.get('nature_of_event')
 
-            # Validate that none of the inputs are None (i.e., no missing data)
-            if None in [device_name, location_of_event, age, gender, past_history, nature_of_event]:
-                flash('Please fill out all fields.', 'danger')
+            if None in [device_name, location, age, gender, history, event_type]:
+                flash('All fields are required.', 'danger')
                 return redirect(url_for('predict'))
 
-            # Prepare input data for the model
-            input_data = pd.DataFrame({
-                'Name of the device': [device_name],
-                'Location of event': [location_of_event],
-                'Age of the patient': [age],
-                'Gender': [gender],
-                'Past history': [past_history],
-                'Nature of Event': [nature_of_event]
-            })
+            df_input = pd.DataFrame([{
+                'Name of the device': device_name,
+                'Location of event': location,
+                'Age of the patient': age,
+                'Gender': gender,
+                'Past history': history,
+                'Nature of Event': event_type
+            }])
 
-            # One-hot encode the sample input data
-            input_data_encoded = pd.get_dummies(input_data)
+            input_encoded = pd.get_dummies(df_input)
+            missing_cols = set(feature_names) - set(input_encoded.columns)
+            for col in missing_cols:
+                input_encoded[col] = 0
+            input_encoded = input_encoded[feature_names]
 
-            # Create a DataFrame with the missing columns as zeros
-            missing_cols = set(feature_names) - set(input_data_encoded.columns)
-            missing_data = pd.DataFrame(0, index=input_data_encoded.index, columns=list(missing_cols))
-            
-            # Concatenate the DataFrames to include the missing columns
-            input_data_encoded = pd.concat([input_data_encoded, missing_data], axis=1)
+            scaled = scaler.transform(input_encoded)
 
-            # Reorder columns to match the feature names
-            input_data_encoded = input_data_encoded[feature_names]
-
-            # Scale the sample input data
-            input_data_scaled = scaler.transform(input_data_encoded)
-
-            # Make predictions using the pre-trained models
-            for target_name, model in models.items():
+            for key, model in models.items():
                 try:
-                    prediction = model.predict(input_data_scaled)
-                    predictions[target_name] = prediction[0]
+                    pred = model.predict(scaled)[0]
+                    predictions[key] = pred
                 except Exception as e:
-                    logger.error(f"Error making prediction with model {target_name}: {str(e)}")
-                    predictions[target_name] = "Error"
-
+                    logger.error(f"Prediction error in {key}: {str(e)}")
+                    predictions[key] = "Error"
         except Exception as e:
-            logger.error(f"Error in prediction route: {str(e)}")
-            flash(f"An error occurred: {str(e)}", 'danger')
+            logger.error(f"Prediction route error: {str(e)}")
+            flash(f"Prediction error: {str(e)}", 'danger')
 
     return render_template('predict.html', predictions=predictions)
+
 if __name__ == '__main__':
     app.run(debug=True)
