@@ -20,16 +20,16 @@ if not os.path.exists('static/plots'):
     os.makedirs('static/plots')
 
 # Load models and scaler
-scaler = joblib.load('D:/FYP/saved_models/scaler.pkl')
-feature_names = joblib.load('D:/FYP/saved_models/feature_names.pkl')
+scaler = joblib.load('./models/scaler.pkl')
+feature_names = joblib.load('./models/feature_names.pkl')
 
 model_paths = {
-    'Device Risk Classification': 'D:/FYP/saved_models/best_model_device_risk_classification.pkl',
-    'Causality Assessment': 'D:/FYP/saved_models/best_model_causality_assessment.pkl',
-    'Serious Event': 'D:/FYP/saved_models/best_model_serious_event.pkl',
-    'Prolongation of Event': 'D:/FYP/saved_models/best_model_prolongation_of_event.pkl',
-    'Potential Diseases or Side Effects': 'D:/FYP/saved_models/best_model_potential_diseases_or_side_effects.pkl',
-    'Prevention Techniques': 'D:/FYP/saved_models/best_model_prevention_techniques.pkl'
+    'Device Risk Classification': './models/best_model_device_risk_classification.pkl',
+    'Causality Assessment': './models/best_model_causality_assessment.pkl',
+    'Serious Event': './models/best_model_serious_event.pkl',
+    'Prolongation of Event': './models/best_model_prolongation_of_event.pkl',
+    'Potential Diseases or Side Effects': './models/best_model_potential_diseases_or_side_effects.pkl',
+    'Prevention Techniques': './models/best_model_prevention_techniques.pkl'
 }
 
 models = {}
